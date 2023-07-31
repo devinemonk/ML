@@ -3,6 +3,12 @@ class Board:
         self.start = 1
         self.end = self.start + size - 1
         self.size = size
+        
+    def getStart(self):
+        return self.start
+        
+    def getSize(self):
+        return self.size
 
 # -----
 import random
@@ -17,6 +23,7 @@ class Dice:
         self.currentValue = random.randint(self.minValue, self.maxValue + 1)
         return self.currentValue
 
+# ------
 
 import random
 
@@ -28,7 +35,7 @@ class Game:
         self.snakes = []
         self.ladders = []
         self.board = Board(boardSize)
-        self.dice = Dice(1, 6, 2)
+        self.dice = Dice(1, 6)
         self.initBoard()
 
     def initBoard(self):
@@ -64,31 +71,32 @@ class Game:
     def playGame(self):
         while True:
             player = self.players.pop(0)
+            
             val = self.dice.roll()
             newPosition = player.getPosition() + val
-            if newPosition > self.board.getEnd():
-                player.setPosition(player.getPosition())
+            if newPosition > self.board.end:
+                player.position = (player.getPosition())
                 self.players.append(player)
             else:
-                player.setPosition(self.getNewPosition(newPosition))
-                if player.getPosition() == self.board.getEnd():
-                    player.setWon(True)
-                    print("Player " + player.getName() + " Won.")
+                player.position = (self.getNewPosition(newPosition))
+                if player.getPosition() == self.board.end:
+                    player.won = True
+                    print("Player " + player.name + " Won.")
                 else:
-                    print("Setting " + player.getName() + "'s new position to " + player.getPosition())
+                    print("Setting " + player.name + "'s new position to " + str(player.getPosition()))
                     self.players.append(player)
             if len(self.players) < 2:
                 break
 
     def getNewPosition(self, newPosition):
         for snake in self.snakes:
-            if snake.getHead() == newPosition:
+            if snake.head == newPosition:
                 print("Snake Bit")
-                return snake.getTail()
+                return snake.tail
         for ladder in self.ladders:
-            if ladder.getStart() == newPosition:
+            if ladder.start == newPosition:
                 print("Climbed ladder")
-                return ladder.getEnd()
+                return ladder.end
         return newPosition
 
 
@@ -105,6 +113,9 @@ class Player:
         self.name = name
         self.position = 0
         self.won = False
+        
+    def getPosition(self):
+        return self.position
 
 # ---
 class Snake:
@@ -128,4 +139,3 @@ for i in range(numberOfPlayers):
     game.addPlayer(player)
 
 game.playGame()
-
